@@ -15,9 +15,9 @@ except ImportError:
 import datetime
 
 import warnings
-import util
-from proxies import CatalogProxy, ResultList
-import artist, song
+from . import util
+from .proxies import CatalogProxy, ResultList
+from . import artist, song
 
 # deal with datetime in json
 dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
@@ -314,7 +314,7 @@ class Catalog(CatalogProxy):
 	{u'date_found': u'2011-02-06T07:50:25',
 	 u'date_posted': u'2011-02-06T07:50:23',
  	 u'id': u'caec686c0dff361e4c53dceb58fb9d2f',
- 	 u'name': u'Linkin Park \u2013 \u201cWaiting For The End\u201d + \u201cWhen They Come For Me\u201d 2/5 SNL',
+ 	 u'name': u'Linkin Park \\u2013 \\u201cWaiting For The End\\u201d + \\u201cWhen They Come For Me\\u201d 2/5 SNL',
  	 u'references': [{u'artist_id': u'ARQUMH41187B9AF699',
         	          u'artist_name': u'Linkin Park'}],
 	 u'summary': u'<span>Linkin</span> <span>Park</span> performed "Waiting For The End" and "When They Come For Me" on Saturday Night Live. Watch the videos below and pick up their album A Thousand Suns on iTunes, Amazon MP3, CD    Social Bookmarking ... ',

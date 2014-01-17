@@ -7,7 +7,7 @@ Created by Tyler Williams on 2010-04-25.
 """
 
 import logging
-from util import attrdict
+from .util import attrdict
 
 # I want a:
 #   generic object that takes a dict and turns it into an object

@@ -7,10 +7,10 @@ Created by Tyler Williams on 2010-04-25.
 
 Utility functions to support the Echo Nest web API interface.
 """
-import urllib
-import urllib2
-import httplib
-import config
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
+import http.client
+from . import config
 import logging
 import socket
 import re
@@ -43,7 +43,7 @@ short_regex = re.compile(r'^((%s)[0-9A-Z]{16})\^?([0-9\.]+)?' % r'|'.join(n[0] f
 long_regex = re.compile(r'music://id.echonest.com/.+?/(%s)/(%s)[0-9A-Z]{16}\^?([0-9\.]+)?' % (r'|'.join(n[0] for n in TYPENAMES), r'|'.join(n[0] for n in TYPENAMES)))
 headers = [('User-Agent', 'Pyechonest %s' % (config.__version__,))]
 
-class MyBaseHandler(urllib2.BaseHandler):
+class MyBaseHandler(urllib.request.BaseHandler):
     def default_open(self, request):
         if config.TRACE_API_CALLS:
             logger.info("%s" % (request.get_full_url(),))
@@ -60,7 +60,7 @@ class MyErrorProcessor(urllib2.HTTPErrorProcessor):
         else:
             urllib2.HTTPErrorProcessor.http_response(self, request, response)
 
-opener = urllib2.build_opener(MyBaseHandler(), MyErrorProcessor())
+opener = urllib.request.build_opener(MyBaseHandler(), MyErrorProcessor())
 opener.addheaders = headers
 
 class EchoNestException(Exception):
@@ -137,7 +137,7 @@ def reallyunicode(s, encoding="utf-8"):
             except UnicodeDecodeError:
                 continue
     if type(s) is not UnicodeType:
-        raise ValueError, "%s is not a string at all." % s
+        raise ValueError("%s is not a string at all." % s)
     return s
 
 def reallyUTF8(s):
@@ -190,15 +190,15 @@ def callm(method, param_dict, POST=False, socket_timeout=None, data=None):
         if not socket_timeout:
             socket_timeout = config.CALL_TIMEOUT
 
-        for key,val in param_dict.iteritems():
+        for key,val in param_dict.items():
             if isinstance(val, list):
                 param_list.extend( [(key,subval) for subval in val] )
             elif val is not None:
-                if isinstance(val, unicode):
+                if isinstance(val, str):
                     val = val.encode('utf-8')
                 param_list.append( (key,val) )
 
-        params = urllib.urlencode(param_list)
+        params = urllib.parse.urlencode(param_list)
 
         orig_timeout = socket.getdefaulttimeout()
         socket.setdefaulttimeout(socket_timeout)
@@ -213,7 +213,7 @@ def callm(method, param_dict, POST=False, socket_timeout=None, data=None):
 
                 if data is None:
                     data = ''
-                data = urllib.urlencode(data)
+                data = urllib.parse.urlencode(data)
                 data = "&".join([data, params])
 
                 f = opener.open(url, data=data)
@@ -233,7 +233,7 @@ def callm(method, param_dict, POST=False, socket_timeout=None, data=None):
 
                 if config.TRACE_API_CALLS:
                     logger.info("%s/%s" % (host+':'+str(port), url,))
-                conn = httplib.HTTPConnection(host, port = port)
+                conn = http.client.HTTPConnection(host, port = port)
                 conn.request('POST', url, body = data, headers = dict([('Content-Type', 'application/octet-stream')]+headers))
                 f = conn.getresponse()
 
@@ -252,7 +252,7 @@ def callm(method, param_dict, POST=False, socket_timeout=None, data=None):
         response_dict = get_successful_response(f)
         return response_dict
 
-    except IOError, e:
+    except IOError as e:
         if hasattr(e, 'reason'):
             raise EchoNestIOError(error=e.reason)
         elif hasattr(e, 'code'):
@@ -292,15 +292,15 @@ def oauthgetm(method, param_dict, socket_timeout=None):
     if not socket_timeout:
         socket_timeout = config.CALL_TIMEOUT
     
-    for key,val in param_dict.iteritems():
+    for key,val in param_dict.items():
         if isinstance(val, list):
             param_list.extend( [(key,subval) for subval in val] )
         elif val is not None:
-            if isinstance(val, unicode):
+            if isinstance(val, str):
                 val = val.encode('utf-8')
             param_list.append( (key,val) )
 
-    params = urllib.urlencode(param_list)
+    params = urllib.parse.urlencode(param_list)
     
     orig_timeout = socket.getdefaulttimeout()
     socket.setdefaulttimeout(socket_timeout)
@@ -333,9 +333,9 @@ def postChunked(host, selector, fields, files):
     memory) and the ability to work from behind a proxy (due to its 
     basis on urllib2).
     """
-    params = urllib.urlencode(fields)
+    params = urllib.parse.urlencode(fields)
     url = 'http://%s%s?%s' % (host, selector, params)
-    u = urllib2.urlopen(url, files)
+    u = urllib.request.urlopen(url, files)
     result = u.read()
     [fp.close() for (key, fp) in files]
     return result
@@ -344,5 +344,5 @@ def postChunked(host, selector, fields, files):
 def fix(x):
     # we need this to fix up all the dict keys to be strings, not unicode objects
     assert(isinstance(x,dict))
-    return dict((str(k), v) for (k,v) in x.iteritems())
+    return dict((str(k), v) for (k,v) in x.items())
 

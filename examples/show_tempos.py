@@ -10,11 +10,11 @@ from pyechonest import track
 def show_tempo(mp3):
     "given an mp3, print out the artist, title and tempo of the song"
     pytrack = track.track_from_filename(mp3)
-    print 'File:  ', mp3
-    print 'Artist:', pytrack.artist if hasattr(pytrack, 'artist') else 'Unknown'
-    print 'Title: ', pytrack.title if hasattr(pytrack, 'title') else 'Unknown'
-    print 'Tempo: ', pytrack.tempo 
-    print
+    print('File:  ', mp3)
+    print('Artist:', pytrack.artist if hasattr(pytrack, 'artist') else 'Unknown')
+    print('Title: ', pytrack.title if hasattr(pytrack, 'title') else 'Unknown')
+    print('Tempo: ', pytrack.tempo) 
+    print()
 
 
 def show_tempos(dir):
@@ -27,6 +27,6 @@ def show_tempos(dir):
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
-        print 'usage: python show_tempos.py path'
+        print('usage: python show_tempos.py path')
     else:
         show_tempos(sys.argv[1])

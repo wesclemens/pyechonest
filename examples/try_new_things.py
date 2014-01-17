@@ -58,7 +58,7 @@ class XmlWriter(object):
     
     def elem(self, name, value, attrs={ }):
         # delete attributes with an unset value
-        for (k, v) in attrs.items():
+        for (k, v) in list(attrs.items()):
             if v is None or v == '':
                 del attrs[k]
         
@@ -80,7 +80,7 @@ class XmlWriter(object):
     def _makeTag(self, name, attrs={ }, close=False):
         ret = '<' + name
     
-        for (k, v) in attrs.iteritems():
+        for (k, v) in attrs.items():
             if v is not None:
                 v = saxutils.quoteattr(str(v))
                 ret += ' %s=%s' % (k, v)
